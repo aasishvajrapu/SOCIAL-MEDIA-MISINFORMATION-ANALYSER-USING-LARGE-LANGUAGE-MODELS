@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Detector</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <span>AI Fake News Detector</span>
+        <div class="nav-buttons">
+            <a href="/dashboard" class="nav-btn dashboard">Dashboard</a>
+            <a href="/logout" class="nav-btn logout">Logout</a>
+        </div>
+    </div>
+
+    <div class="chat-box">
+        {% if result %}
+        <!-- USER MESSAGE -->
+        <div class="message user">
+            <div class="bubble">
+                {{ user_input }}
+            </div>
+            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" class="avatar">
+        </div>
+
+        <!-- AI RESPONSE -->
+        <div class="message ai">
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" class="avatar">
+            <div class="bubble">
+                <p><strong>Type:</strong> {{ result.label }}</p>
+                <p><strong>Confidence:</strong> {{ result.confidence }}%</p>
+                <p><strong>Tone:</strong> {{ result.tone }}</p>
+                <p><strong>Post:</strong> {{ result.post_type }}</p>
+
+                <div class="cleaned-box">
+                    <strong>Interpreted:</strong><br>
+                    {{ result.refined_text }}
+                </div>
+
+                <p class="result-text">
+                    {{ result.highlighted | safe }}
+                </p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- LOADER -->
+        <div id="typing-indicator" style="display:none;" class="message ai">
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" class="avatar">
+            <div class="bubble">
+                <div class="typing">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INPUT AREA -->
+    <form method="POST" enctype="multipart/form-data" class="input-area">    
+        <textarea name="content" placeholder="Type message..."></textarea>
+        <input type="file" name="image">
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+<script>
+const form = document.querySelector("form");
+const chatBox = document.querySelector(".chat-box");
+
+form.addEventListener("submit", function() {
+    const text = document.querySelector("textarea").value;
+
+    if (text.trim() !== "") {
+
+        // CREATE USER MESSAGE
+        const msg = document.createElement("div");
+        msg.className = "message user";
+
+        msg.innerHTML = `
+            <div class="bubble">${text}</div>
+            <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" class="avatar">
+        `;
+
+        chatBox.appendChild(msg);
+
+        // SHOW TYPING
+        document.getElementById("typing-indicator").style.display = "flex";
+
+        // AUTO SCROLL
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+});
+</script>
+
+</body>
+</html>
